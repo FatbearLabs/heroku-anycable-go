@@ -16,7 +16,17 @@ else
   version="0.6.0"
 fi
 
-ANYCABLE_GO_URL="https://github.com/anycable/anycable-go/releases/download/v$version/anycable-go-v$version-linux-amd64"
+if [ -f "$ENV_DIR/HEROKU_ANYCABLE_GO_GITHUB_ASSET" ]; then
+  asset=`cat $ENV_DIR/HEROKU_ANYCABLE_GO_GITHUB_ASSET`
+  token=`cat $ENV_DIR/GITHUB_TOKEN`
+  ANYCABLE_GO_URL=$(curl --header "Authorization: token $token" \
+                         --header "Accept: application/octet-stream" \
+                         --write-out "%{redirect_url}" \
+                         "$asset")
+else
+  ANYCABLE_GO_URL="https://github.com/anycable/anycable-go/releases/download/v$version/anycable-go-v$version-linux-amd64"
+fi
+
 ANYCABLE_GO_CACHE="$CACHE_DIR/anycable-go-$version"
 
 BIN_DIR=$(cd $(dirname $0); pwd)
